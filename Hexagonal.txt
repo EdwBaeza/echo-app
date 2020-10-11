@@ -1,0 +1,12 @@
+HEXAGONAL ARCHITECTURE
+
+infrastructure:
+- server: http, tcp, CLI, ...
+- repositories : database
+
+application
+- services : http
+
+domain
+- domain : business logic
+- ports : services and repositories definition and not implementation
