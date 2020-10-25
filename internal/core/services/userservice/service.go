@@ -15,10 +15,10 @@ func NewService(repository ports.UsersRepository) *service {
 	}
 }
 
-func (service *service) Get(id int) (domain.User, error) {
+func (service *service) Get(id string) (domain.User, error) {
 	return service.repository.Get(id)
 }
 
 func (service *service) Create(user domain.User) error {
-	return service.repository.Create(user)
+	return service.repository.Save(user)
 }

@@ -13,31 +13,31 @@ var (
 
 //Repository in memory
 type Repository struct {
-	data   map[int]domain.User
-	lastID int
+	data   map[string]domain.User
+	lastID string
 }
 
 // NewUserRepository return a instance of repository
 func NewUserRepository() *Repository {
 	onceUserRepository.Do(func() {
 		instancePersonRepository = &Repository{
-			data:   make(map[int]domain.User),
-			lastID: 0,
+			data:   make(map[string]domain.User),
+			lastID: "",
 		}
 	})
 	return instancePersonRepository
 }
 
 // Get user with repository
-func (repository *Repository) Get(id int) (domain.User, error) {
+func (repository *Repository) Get(id string) (domain.User, error) {
 	var user domain.User
 	user = repository.data[id]
 	return user, nil
 }
 
-// Create user with repository params
-func (repository *Repository) Create(user domain.User) error {
-	repository.data[repository.lastID] = user
-	repository.lastID++
+// Save user with repository params
+func (repository *Repository) Save(user domain.User) error {
+	repository.data[user.ID] = user
+	repository.lastID = user.ID
 	return nil
 }

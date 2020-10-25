@@ -2,17 +2,20 @@ package server
 
 import (
 	"github.com/EdwinBaeza05/echo_app/internal/core/services/userservice"
-	"github.com/EdwinBaeza05/echo_app/internal/infrastructure/repositories/memory"
+	"github.com/EdwinBaeza05/echo_app/internal/infrastructure/repositories/nosql"
 	"github.com/labstack/echo/v4"
 )
 
 // RegisterRouter Echo
 func RegisterRouter(engine *echo.Echo) {
 
-	userRepository := memory.NewUserRepository()
+	userRepository := nosql.NewUserRepository()
+	userRepository.GetClient()
 	userService := userservice.NewService(userRepository)
-	getEndpoint := GetPersonEndpoint(userService)
 
-	engine.GET("person/", getEndpoint)
+	getUserHandler := GetUserHandler(userService)
+	createUserHandler := CreateUserHandler(userService)
 
+	engine.GET("users/:id", getUserHandler)
+	engine.POST("users/", createUserHandler)
 }

@@ -5,6 +5,6 @@ import (
 )
 
 type UsersService interface {
-	Get(id int) (domain.User, error)
+	Get(id string) (domain.User, error)
 	Create(user domain.User) error
 }
