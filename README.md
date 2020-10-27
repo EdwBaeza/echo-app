@@ -1,10 +1,9 @@
 # echo_app
 * Docker Instructions
 
-docker volume create mongodata
-docker network create --attachable echonet
-docker run -d --name db --mount src=mongodata,dst=/data/db mongo
-
-docker network connect echonet db
-docker run -d --name app -p 3000:8080 echoapp:2.0
-docker network connect echonet app
+1.- ´docker volume create mongodata´
+2.- ´docker network create --attachable echonet´
+3.- ´docker run -d --name db --mount src=mongodata,dst=/data/db mongo´
+4.- ´docker network connect echonet db´
+5.- ´docker run -d --name app -p 3000:8080 echoapp:2.0´
+6.- ´docker network connect echonet app´
