@@ -2,6 +2,7 @@ package nosql
 
 import (
 	"context"
+	"log"
 	"sync"
 	"time"
 
@@ -17,6 +18,7 @@ var (
 	instanceUserRepository *Repository
 )
 
+// Repository by nosql (mongo)
 type Repository struct {
 	client  *mongo.Client
 	context context.Context
@@ -48,17 +50,28 @@ func NewUserRepository() *Repository {
 //Save user in mongodb
 func (repository *Repository) Save(user domain.User) (domain.User, error) {
 	collection := repository.client.Database("echoapp").Collection("users")
-	_, err := collection.InsertOne(context.TODO(), user)
+	result, err := collection.InsertOne(context.TODO(), user)
+	if err != nil {
+		log.Println("Error insert one: ", err)
+		return user, err
+	}
+	log.Println("ID created user", result.InsertedID)
 
-	return user, err
+	user.ID = result.InsertedID.(primitive.ObjectID)
+	return user, nil
 }
 
 //Get user in mongodb
 func (repository *Repository) Get(id string) (domain.User, error) {
-	objectID, _ := primitive.ObjectIDFromHex(id)
+	var user domain.User
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		log.Println("Error get id ", err.Error())
+		return user, err
+	}
+
 	collection := repository.client.Database("echoapp").Collection("users")
 	filter := bson.M{"_id": objectID}
-	var user domain.User
-	err := collection.FindOne(context.TODO(), filter).Decode(&user)
-	return user, err
+	findOneError := collection.FindOne(context.TODO(), filter).Decode(&user)
+	return user, findOneError
 }
