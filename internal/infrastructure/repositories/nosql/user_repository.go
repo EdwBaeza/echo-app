@@ -24,7 +24,7 @@ type Repository struct {
 
 //GetClient for mongodb
 func (repository *Repository) GetClient() error {
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://172.19.0.2:27017/echoapp"))
+	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://mongodb:27017/echoapp"))
 	repository.client = client
 	repository.context, _ = context.WithTimeout(context.Background(), 10*time.Second)
 	err = repository.client.Connect(repository.context)
@@ -46,11 +46,11 @@ func NewUserRepository() *Repository {
 }
 
 //Save user in mongodb
-func (repository *Repository) Save(user domain.User) error {
+func (repository *Repository) Save(user domain.User) (domain.User, error) {
 	collection := repository.client.Database("echoapp").Collection("users")
 	_, err := collection.InsertOne(context.TODO(), user)
 
-	return err
+	return user, err
 }
 
 //Get user in mongodb

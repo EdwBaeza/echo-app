@@ -6,5 +6,5 @@ import (
 
 type UsersRepository interface {
 	Get(id string) (domain.User, error)
-	Save(user domain.User) error
+	Save(user domain.User) (domain.User, error)
 }

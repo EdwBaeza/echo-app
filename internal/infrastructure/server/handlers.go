@@ -8,7 +8,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-//GetUserHandler by echo v4
+//GetUserHandler by lib echo v4
 func GetUserHandler(service ports.UsersService) func(c echo.Context) error {
 	return func(c echo.Context) error {
 		id := c.Param("id")
@@ -25,6 +25,6 @@ func CreateUserHandler(service ports.UsersService) func(c echo.Context) error {
 			return c.String(http.StatusBadRequest, err.Error())
 		}
 		service.Create(user)
-		return c.String(http.StatusOK, "OK")
+		return c.JSON(http.StatusOK, user)
 	}
 }

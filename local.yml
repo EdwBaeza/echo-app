@@ -1,0 +1,19 @@
+version: '3'
+
+volumes:
+  mongo_data_local: {}
+
+services:
+  golang: &golang
+    build:
+      context: .
+      dockerfile: ./compose/development/Dockerfile
+    image: echo_app_local
+    depends_on:
+      - mongodb
+    ports:
+      - "8080:8080"
+  mongodb:
+    image: mongo:4.4.2
+    volumes:
+      - mongo_data_local:/data/db

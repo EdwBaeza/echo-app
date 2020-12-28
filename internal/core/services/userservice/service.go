@@ -19,6 +19,6 @@ func (service *service) Get(id string) (domain.User, error) {
 	return service.repository.Get(id)
 }
 
-func (service *service) Create(user domain.User) error {
+func (service *service) Create(user domain.User) (domain.User, error) {
 	return service.repository.Save(user)
 }
