@@ -1,4 +1,4 @@
-# echo_app
+# echo-app
 ## Hexagonal Arquitecture
 
 infrastructure:

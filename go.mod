@@ -1,4 +1,4 @@
-module github.com/EdwBaeza/echo_app
+module github.com/EdwBaeza/echo-app
 
 go 1.13
 
