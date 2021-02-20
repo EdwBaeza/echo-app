@@ -1,8 +1,8 @@
-package userservice
+package user_service
 
 import (
-	"github.com/EdwinBaeza05/echo_app/internal/core/domain"
-	"github.com/EdwinBaeza05/echo_app/internal/core/ports"
+	"github.com/EdwBaeza/echo_app/internal/core/domain"
+	"github.com/EdwBaeza/echo_app/internal/core/ports"
 )
 
 type service struct {

@@ -1,7 +1,7 @@
 package ports
 
 import (
-	"github.com/EdwinBaeza05/echo_app/internal/core/domain"
+	"github.com/EdwBaeza/echo_app/internal/core/domain"
 )
 
 type UsersRepository interface {

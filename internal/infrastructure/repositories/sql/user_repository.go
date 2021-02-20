@@ -1,6 +1,6 @@
 package sql
 
-import "github.com/EdwinBaeza05/echo_app/internal/core/domain"
+import "github.com/EdwBaeza/echo_app/internal/core/domain"
 
 type repository struct {
 }

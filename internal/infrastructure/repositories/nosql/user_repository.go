@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/EdwinBaeza05/echo_app/internal/core/domain"
+	"github.com/EdwBaeza/echo_app/internal/core/domain"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"

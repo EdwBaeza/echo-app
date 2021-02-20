@@ -3,7 +3,7 @@ package memory
 import (
 	"sync"
 
-	"github.com/EdwinBaeza05/echo_app/internal/core/domain"
+	"github.com/EdwBaeza/echo_app/internal/core/domain"
 )
 
 var (
@@ -37,7 +37,7 @@ func (repository *Repository) Get(id string) (domain.User, error) {
 
 // Save user with repository params
 func (repository *Repository) Save(user domain.User) (domain.User, error) {
-	repository.data[user.ID] = user
-	repository.lastID = user.ID
+	repository.data[user.ID.Hex()] = user
+	repository.lastID = user.ID.Hex()
 	return user, nil
 }
