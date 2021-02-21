@@ -10,4 +10,3 @@ Application
 
 Domain
 - domain: business logic
-∫
