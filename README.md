@@ -1,5 +1,5 @@
 # echo-app
-## Hexagonal Arquitecture
+## Hexagonal Architecture
 
 infrastructure:
 - server: http, tcp, CLI, ...
