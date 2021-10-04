@@ -1,8 +1,8 @@
 package user_service
 
 import (
-	"github.com/EdwBaeza/echo_app/internal/core/domain"
-	"github.com/EdwBaeza/echo_app/internal/core/ports"
+	"github.com/EdwBaeza/echo-app/internal/core/domain"
+	"github.com/EdwBaeza/echo-app/internal/core/ports"
 )
 
 type service struct {
@@ -15,10 +15,14 @@ func NewService(repository ports.UsersRepository) *service {
 	}
 }
 
-func (service *service) Get(id string) (domain.User, error) {
-	return service.repository.Get(id)
+func (service *service) Find(id string) (domain.User, error) {
+	return service.repository.Find(id)
 }
 
 func (service *service) Create(user domain.User) (domain.User, error) {
 	return service.repository.Save(user)
+}
+
+func (service *service) All() ([]domain.User, error) {
+	return service.repository.All()
 }

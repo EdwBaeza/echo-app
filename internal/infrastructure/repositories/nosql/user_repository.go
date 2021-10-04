@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/EdwBaeza/echo_app/internal/core/domain"
+	"github.com/EdwBaeza/echo-app/internal/core/domain"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -52,7 +52,7 @@ func (repository *Repository) Save(user domain.User) (domain.User, error) {
 	collection := repository.client.Database("echoapp").Collection("users")
 	result, err := collection.InsertOne(context.TODO(), user)
 	if err != nil {
-		log.Println("Error insert one: ", err)
+		log.Fatalln("Error insert one: ", err)
 		return user, err
 	}
 	log.Println("ID created user", result.InsertedID)
@@ -61,12 +61,12 @@ func (repository *Repository) Save(user domain.User) (domain.User, error) {
 	return user, nil
 }
 
-//Get user in mongodb
-func (repository *Repository) Get(id string) (domain.User, error) {
+//Find user in mongodb
+func (repository *Repository) Find(id string) (domain.User, error) {
 	var user domain.User
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		log.Println("Error get id ", err.Error())
+		log.Fatalln("Error get id ", err.Error())
 		return user, err
 	}
 
@@ -74,4 +74,23 @@ func (repository *Repository) Get(id string) (domain.User, error) {
 	filter := bson.M{"_id": objectID}
 	findOneError := collection.FindOne(context.TODO(), filter).Decode(&user)
 	return user, findOneError
+}
+
+//All user in mongodb
+func (repository *Repository) All() ([]domain.User, error) {
+	var users []domain.User
+
+	collection := repository.client.Database("echoapp").Collection("users")
+	cursor, err := collection.Find(context.TODO(), bson.D{})
+
+	defer cursor.Close(repository.context)
+	for cursor.Next(repository.context) {
+		var user domain.User
+		if err = cursor.Decode(&user); err != nil {
+			log.Fatalln(err)
+		}
+		users = append(users, user)
+	}
+
+	return users, err
 }

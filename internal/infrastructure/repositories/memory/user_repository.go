@@ -3,7 +3,7 @@ package memory
 import (
 	"sync"
 
-	"github.com/EdwBaeza/echo_app/internal/core/domain"
+	"github.com/EdwBaeza/echo-app/internal/core/domain"
 )
 
 var (
@@ -29,7 +29,7 @@ func NewUserRepository() *Repository {
 }
 
 // Get user with repository
-func (repository *Repository) Get(id string) (domain.User, error) {
+func (repository *Repository) Find(id string) (domain.User, error) {
 	var user domain.User
 	user = repository.data[id]
 	return user, nil

@@ -1,6 +1,6 @@
 package sql
 
-import "github.com/EdwBaeza/echo_app/internal/core/domain"
+import "github.com/EdwBaeza/echo-app/internal/core/domain"
 
 type repository struct {
 }
@@ -10,7 +10,7 @@ func NewUserRepository() *repository {
 	return &repository{}
 }
 
-func (repository *repository) Get(id int) (domain.User, error) {
+func (repository *repository) Find(id int) (domain.User, error) {
 	var user domain.User
 	return user, nil
 }

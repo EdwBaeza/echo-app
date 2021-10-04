@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/EdwBaeza/echo_app/internal/infrastructure/server"
+	"github.com/EdwBaeza/echo-app/internal/infrastructure/server"
 	"github.com/labstack/echo/v4"
 )
 
