@@ -52,7 +52,7 @@ func (repository *Repository) Save(user domain.User) (domain.User, error) {
 	collection := repository.client.Database("echoapp").Collection("users")
 	result, err := collection.InsertOne(context.TODO(), user)
 	if err != nil {
-		log.Fatalln("Error insert one: ", err)
+		log.Println("Error insert one: ", err)
 		return user, err
 	}
 	log.Println("ID created user", result.InsertedID)
@@ -66,7 +66,7 @@ func (repository *Repository) Find(id string) (domain.User, error) {
 	var user domain.User
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		log.Fatalln("Error get id ", err.Error())
+		log.Println("Error get id ", err.Error())
 		return user, err
 	}
 
@@ -85,9 +85,10 @@ func (repository *Repository) All() ([]domain.User, error) {
 
 	defer cursor.Close(repository.context)
 	for cursor.Next(repository.context) {
+
 		var user domain.User
 		if err = cursor.Decode(&user); err != nil {
-			log.Fatalln(err)
+			log.Println(err)
 		}
 		users = append(users, user)
 	}

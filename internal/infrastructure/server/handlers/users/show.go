@@ -1,7 +1,6 @@
 package users
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/EdwBaeza/echo-app/internal/core/ports"
@@ -12,8 +11,12 @@ import (
 func ShowHandler(service ports.UsersService) func(c echo.Context) error {
 	return func(c echo.Context) error {
 		id := c.Param("id")
-		log.Println("Id param: ", id)
-		user, _ := service.Find(id)
+		user, err := service.Find(id)
+
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, struct{ Message string }{Message: string(err.Error())})
+		}
+
 		return c.JSON(http.StatusOK, user)
 	}
 }
