@@ -5,7 +5,7 @@ import (
 )
 
 type UsersService interface {
-	Find(id string) (domain.User, error)
-	All() ([]domain.User, error)
-	Create(user domain.User) (domain.User, error)
+	Find(id string) (*domain.User, error)
+	All(pageSize int, pageNumber int) (*domain.UserPage, error)
+	Create(user domain.User) (*domain.User, error)
 }

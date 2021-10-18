@@ -3,6 +3,7 @@ package nosql
 import (
 	"context"
 	"log"
+	"os"
 	"sync"
 	"time"
 
@@ -13,85 +14,98 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+const COLLECTION_NAME = "users"
+
 var (
 	onceUserRepository     sync.Once
-	instanceUserRepository *Repository
+	instanceUserRepository *UserRepository
 )
 
-// Repository by nosql (mongo)
-type Repository struct {
-	client  *mongo.Client
-	context context.Context
+type UserRepository struct {
+	Repository
 }
 
-//GetClient for mongodb
-func (repository *Repository) GetClient() error {
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://mongodb:27017/echoapp"))
+//BuildClient for mongodb
+func (repository *UserRepository) BuildClient() error {
+	client, err := mongo.NewClient(options.Client().ApplyURI(os.Getenv("MONGO_URI")))
 	repository.client = client
-	repository.context, _ = context.WithTimeout(context.Background(), 10*time.Second)
+	repository.collection = client.Database(os.Getenv("MONGODB")).Collection(COLLECTION_NAME)
+	repository.context, _ = context.WithTimeout(context.Background(), 60*time.Second)
 	err = repository.client.Connect(repository.context)
 
 	return err
 }
 
 //CloseClient for mongodb
-func (repository *Repository) CloseClient() {
+func (repository *UserRepository) CloseClient() {
 	repository.client.Disconnect(repository.context)
 }
 
 // NewUserRepository return a instance of repository
-func NewUserRepository() *Repository {
+func NewUserRepository() *UserRepository {
 	onceUserRepository.Do(func() {
-		instanceUserRepository = new(Repository)
+		instanceUserRepository = new(UserRepository)
 	})
+	instanceUserRepository.BuildClient()
+
 	return instanceUserRepository
 }
 
 //Save user in mongodb
-func (repository *Repository) Save(user domain.User) (domain.User, error) {
-	collection := repository.client.Database("echoapp").Collection("users")
-	result, err := collection.InsertOne(context.TODO(), user)
+func (repository *UserRepository) Save(user domain.User) (*domain.User, error) {
+	result, err := repository.collection.InsertOne(context.TODO(), user)
+
 	if err != nil {
 		log.Println("Error insert one: ", err)
-		return user, err
+		return &user, err
 	}
 	log.Println("ID created user", result.InsertedID)
 
-	user.ID = result.InsertedID.(primitive.ObjectID)
-	return user, nil
+	createdUser, _ := repository.Find(result.InsertedID.(primitive.ObjectID).Hex())
+
+	return createdUser, nil
 }
 
 //Find user in mongodb
-func (repository *Repository) Find(id string) (domain.User, error) {
-	var user domain.User
+func (repository *UserRepository) Find(id string) (*domain.User, error) {
+	user := &domain.User{}
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		log.Println("Error get id ", err.Error())
+		log.Println("Error find by id ", err.Error())
 		return user, err
 	}
 
-	collection := repository.client.Database("echoapp").Collection("users")
 	filter := bson.M{"_id": objectID}
-	findOneError := collection.FindOne(context.TODO(), filter).Decode(&user)
+	findOneError := repository.collection.FindOne(context.TODO(), filter).Decode(&user)
 	return user, findOneError
 }
 
 //All user in mongodb
-func (repository *Repository) All() ([]domain.User, error) {
-	var users []domain.User
+func (repository *UserRepository) All(pageSize int, pageNumber int) (*domain.UserPage, error) {
+	userPage := &domain.UserPage{
+		Data: []*domain.User{},
+		Page: domain.Page{
+			PageSize:   pageSize,
+			PageNumber: pageNumber,
+		},
+	}
+	userPage.SetLinks()
 
-	collection := repository.client.Database("echoapp").Collection("users")
-	cursor, err := collection.Find(context.TODO(), bson.D{})
+	cursor, err := repository.collection.Find(context.TODO(), bson.D{})
 
 	defer cursor.Close(repository.context)
 	for cursor.Next(repository.context) {
 
-		var user domain.User
-		if err = cursor.Decode(&user); err != nil {
+		user := &domain.User{}
+		if err = cursor.Decode(user); err != nil {
 			log.Println(err)
 		}
-		users = append(users, user)
+		userPage.Data = append(userPage.Data, user)
 	}
+	startPage := pageSize * pageNumber
+	endPage := startPage + pageSize
+	userPage.Count = len(userPage.Data)
+	userPage.Data = userPage.Data[startPage:endPage]
 
-	return users, err
+	return userPage, err
 }

@@ -11,7 +11,6 @@ import (
 func RegisterRouter(engine *echo.Echo) {
 
 	userRepository := nosql.NewUserRepository()
-	userRepository.GetClient()
 	userService := user_service.NewService(userRepository)
 
 	showUserHandler := users.ShowHandler(userService)

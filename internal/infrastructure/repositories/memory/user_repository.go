@@ -37,7 +37,7 @@ func (repository *Repository) Find(id string) (domain.User, error) {
 
 // Save user with repository params
 func (repository *Repository) Save(user domain.User) (domain.User, error) {
-	repository.data[user.ID.Hex()] = user
-	repository.lastID = user.ID.Hex()
+	repository.data[user.ID] = user
+	repository.lastID = user.ID
 	return user, nil
 }

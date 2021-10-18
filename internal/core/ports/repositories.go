@@ -5,7 +5,7 @@ import (
 )
 
 type UsersRepository interface {
-	Find(id string) (domain.User, error)
-	All() ([]domain.User, error)
-	Save(user domain.User) (domain.User, error)
+	Find(id string) (*domain.User, error)
+	All(pageSize int, pageNumber int) (*domain.UserPage, error)
+	Save(user domain.User) (*domain.User, error)
 }

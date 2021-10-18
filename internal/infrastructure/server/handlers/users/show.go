@@ -14,7 +14,7 @@ func ShowHandler(service ports.UsersService) func(c echo.Context) error {
 		user, err := service.Find(id)
 
 		if err != nil {
-			return c.JSON(http.StatusBadRequest, struct{ Message string }{Message: string(err.Error())})
+			return echo.NewHTTPError(http.StatusBadRequest, err)
 		}
 
 		return c.JSON(http.StatusOK, user)

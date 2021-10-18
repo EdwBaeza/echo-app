@@ -15,14 +15,14 @@ func NewService(repository ports.UsersRepository) *service {
 	}
 }
 
-func (service *service) Find(id string) (domain.User, error) {
+func (service *service) Find(id string) (*domain.User, error) {
 	return service.repository.Find(id)
 }
 
-func (service *service) Create(user domain.User) (domain.User, error) {
+func (service *service) Create(user domain.User) (*domain.User, error) {
 	return service.repository.Save(user)
 }
 
-func (service *service) All() ([]domain.User, error) {
-	return service.repository.All()
+func (service *service) All(pageSize int, pageNumber int) (*domain.UserPage, error) {
+	return service.repository.All(pageSize, pageNumber)
 }
