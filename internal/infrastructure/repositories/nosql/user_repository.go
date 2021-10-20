@@ -89,8 +89,6 @@ func (repository *UserRepository) All(pageSize int, pageNumber int) (*domain.Use
 			PageNumber: pageNumber,
 		},
 	}
-	userPage.SetLinks()
-
 	cursor, err := repository.collection.Find(context.TODO(), bson.D{})
 
 	defer cursor.Close(repository.context)

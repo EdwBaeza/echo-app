@@ -13,6 +13,7 @@ func ListHandler(service ports.UsersService) func(c echo.Context) error {
 	return func(c echo.Context) error {
 		pageSize, pageNumber := utils.GetPageParams(c)
 		userPage, _ := service.All(pageSize, pageNumber)
+		userPage.SetLinks(c.Request())
 
 		return c.JSON(http.StatusOK, userPage)
 	}
