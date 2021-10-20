@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/EdwBaeza/echo-app/internal/core/domain"
+	. "github.com/gobeam/mongo-go-pagination"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -30,7 +31,7 @@ func (repository *UserRepository) BuildClient() error {
 	client, err := mongo.NewClient(options.Client().ApplyURI(os.Getenv("MONGO_URI")))
 	repository.client = client
 	repository.collection = client.Database(os.Getenv("MONGODB")).Collection(COLLECTION_NAME)
-	repository.context, _ = context.WithTimeout(context.Background(), 60*time.Second)
+	repository.context, _ = context.WithTimeout(context.Background(), 120*time.Second)
 	err = repository.client.Connect(repository.context)
 
 	return err
@@ -82,28 +83,30 @@ func (repository *UserRepository) Find(id string) (*domain.User, error) {
 
 //All user in mongodb
 func (repository *UserRepository) All(pageSize int, pageNumber int) (*domain.UserPage, error) {
+	count, _ := repository.collection.CountDocuments(repository.context, bson.D{})
 	userPage := &domain.UserPage{
-		Data: []*domain.User{},
+		Data: make([]*domain.User, 0),
 		Page: domain.Page{
 			PageSize:   pageSize,
 			PageNumber: pageNumber,
+			Count:      int(count),
 		},
 	}
-	cursor, err := repository.collection.Find(context.TODO(), bson.D{})
+	paginatedData, err := New(repository.collection).
+		Context(repository.context).Limit(int64(pageSize)).
+		Page(int64(pageNumber)).
+		Aggregate()
 
-	defer cursor.Close(repository.context)
-	for cursor.Next(repository.context) {
-
-		user := &domain.User{}
-		if err = cursor.Decode(user); err != nil {
-			log.Println(err)
-		}
-		userPage.Data = append(userPage.Data, user)
+	if err != nil {
+		log.Println(err)
 	}
-	startPage := pageSize * pageNumber
-	endPage := startPage + pageSize
-	userPage.Count = len(userPage.Data)
-	userPage.Data = userPage.Data[startPage:endPage]
+
+	for _, raw := range paginatedData.Data {
+		user := &domain.User{}
+		if marshallErr := bson.Unmarshal(raw, user); marshallErr == nil {
+			userPage.Data = append(userPage.Data, user)
+		}
+	}
 
 	return userPage, err
 }

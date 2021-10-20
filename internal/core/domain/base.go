@@ -27,21 +27,29 @@ func (page *Page) SetLinks(r *http.Request) {
 }
 
 func (page *Page) GetNextLink(r *http.Request) string {
-	if page.PageNumber >= page.Count {
+	if page.PageNumber >= page.GetMaxPage() {
 		return ""
 	}
 
-	return fmt.Sprintf("%s%s?pageNumber=%d&pageSize=%d", r.Host, r.URL.Path, page.PageNumber+1, page.PageSize)
+	return formatLink(r, page.PageNumber+1, page.PageSize)
 }
 
 func (page *Page) GetSelfLink(r *http.Request) string {
-	return fmt.Sprintf("%s%s?pageNumber=%d&pageSize=%d", r.Host, r.URL.Path, page.PageNumber, page.PageSize)
+	return formatLink(r, page.PageNumber, page.PageSize)
 }
 
 func (page *Page) GetPrevLink(r *http.Request) string {
-	if page.PageNumber < 2 {
+	if page.PageNumber < 2 || (page.PageNumber-1) > page.GetMaxPage() {
 		return ""
 	}
 
-	return fmt.Sprintf("%s%s?pageNumber=%d&pageSize=%d", r.Host, r.URL.Path, page.PageNumber-1, page.PageSize)
+	return formatLink(r, page.PageNumber-1, page.PageSize)
+}
+
+func (page *Page) GetMaxPage() int {
+	return page.Count / page.PageSize
+}
+
+func formatLink(r *http.Request, pageNumber int, pageSize int) string {
+	return fmt.Sprintf("%s%s?pageNumber=%d&pageSize=%d", r.Host, r.URL.Path, pageNumber, pageSize)
 }
